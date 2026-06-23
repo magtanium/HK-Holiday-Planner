@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港公眾假期計時器 / HK Public Holiday Planner</title>
+
+    <meta name="description" content="最準確的香港公眾假期計時器與請假攻略。自動計算剩餘工作天，助你輕鬆規劃長假期！HK Public Holiday countdown timer and holiday planner.">
+    <meta name="keywords" content="香港公眾假期, 計時器, 放假計時器, 請假攻略, HK Public Holiday, Countdown, Holiday Planner, 2026公眾假期, 2027公眾假期">
+    <meta name="author" content="Chi Kit Matthew Choy">
+
+    <meta property="og:title" content="香港公眾假期計時器 / HK Public Holiday Planner">
+    <meta property="og:description" content="自動計算下一個假期的剩餘工作天！即刻睇埋請假攻略，自製連假。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-domain-name.com">
+    <meta property="og:image" content="https://your-domain-name.com/preview-thumbnail.jpg">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+            crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --bg-color: #f0f3f5;
+            --card-bg: #ffffff;
+            --primary-color: #e53935;
+            --primary-hover: #c62828;
+            --selected-color: #2e7d32; 
+            --suggested-al-color: #0288d1;
+            --suggested-al-hover: #01579b;
+            --user-al-color: #3f51b5; 
+            --user-al-hover: #1a237e;
+            --export-btn-color: #43a047;
+            --export-btn-hover: #2e7d32;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --weekend-bg: #f8f9fa;
+            --weekend-text: #bdc3c7;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .dashboard {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .lang-control-panel {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: -10px;
+        }
+
+        .toggle-lang-btn {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+            border: none;
+            padding: 6px 14px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-lang-btn.active {
+            background-color: var(--text-main);
+            color: #ffffff;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .countdown-card {
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin: 0 0 15px 0;
+        }
+
+        .countdown-wrapper {
+            margin: 15px 0;
+        }
+
+        .number {
+            font-size: 5.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .countdown-card.browsing .number {
+            color: var(--selected-color);
+        }
+
+        .label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 15px;
+            background: #fdfdfd;
+            border: 1px solid #eaeaea;
+            border-radius: 50px;
+            padding: 8px 16px;
+        }
+
+        .nav-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.2s ease, opacity 0.2s ease;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        .nav-btn:disabled {
+            background-color: #e0e0e0;
+            color: #a0a0a0;
+            cursor: not-allowed;
+        }
+
+        .holiday-details {
+            flex-grow: 1;
+        }
+
+        .holiday-name {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .holiday-date {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Optimizer Styles */
+        .optimizer-card h2 {
+            font-size: 1.4rem;
+            margin: 0 0 20px 0;
+            color: var(--text-main);
+            border-left: 4px solid var(--suggested-al-color);
+            padding-left: 10px;
+        }
+
+        .optimizer-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .optimizer-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .optimizer-input-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .optimizer-input {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 140px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .optimizer-input:focus {
+            border-color: var(--suggested-al-color);
+        }
+
+        .optimizer-btn {
+            background-color: var(--suggested-al-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 22px;
+        }
+
+        .optimizer-btn:hover {
+            background-color: var(--suggested-al-hover);
+        }
+
+        .clear-btn {
+            background-color: #607d8b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 22px;
+        }
+
+        .clear-btn:hover {
+            background-color: #455a64;
+        }
+
+        .export-btn {
+            background-color: var(--export-btn-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 22px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn:hover {
+            background-color: var(--export-btn-hover);
+        }
+
+        .optimizer-summary {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0277bd;
+            background-color: #e1f5fe;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border-left: 4px solid var(--suggested-al-color);
+            white-space: pre-line;
+            display: none;
+        }
+
+        .calendar-card h2 {
+            font-size: 1.4rem;
+            margin: 0 0 20px 0;
+            color: var(--text-main);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .month-box {
+            border: 1px solid #eef2f5;
+            border-radius: 8px;
+            padding: 12px;
+            background: #fafbfc;
+        }
+
+        .month-title {
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .day-name {
+            font-weight: 700;
+            color: var(--text-muted);
+            padding-bottom: 5px;
+        }
+
+        .day-cell {
+            padding: 6px 0;
+            border-radius: 6px;
+            color: var(--text-main);
+            font-weight: 500;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .day-cell.weekend {
+            background-color: var(--weekend-bg);
+            color: var(--weekend-text);
+        }
+
+        .day-cell.holiday {
+            background-color: var(--primary-color);
+            color: #ffffff !important;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .day-cell.holiday:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.1);
+            z-index: 2;
+        }
+
+        /* Suggested AL Color Styles */
+        .day-cell.suggested-al {
+            background-color: var(--suggested-al-color) !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(2, 136, 209, 0.3);
+        }
+
+        .day-cell.suggested-al:hover {
+            background-color: var(--suggested-al-hover) !important;
+        }
+
+        /* User Preferred AL Color Styles */
+        .day-cell.user-selected-al {
+            background-color: var(--user-al-color) !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(63, 81, 181, 0.3);
+        }
+
+        .day-cell.user-selected-al:hover {
+            background-color: var(--user-al-hover) !important;
+        }
+
+        .day-cell.standard-workday {
+            cursor: pointer;
+        }
+
+        .day-cell.standard-workday:hover {
+            box-shadow: inset 0 0 0 2px var(--user-al-color);
+        }
+
+        .day-cell.holiday.selected-holiday {
+            background-color: var(--selected-color) !important;
+            box-shadow: 0 2px 6px rgba(46, 125, 50, 0.4);
+            transform: scale(1.1);
+            z-index: 3;
+        }
+
+        .day-cell.today {
+            box-shadow: inset 0 0 0 2px var(--text-main);
+            font-weight: 700;
+        }
+
+        .day-cell.empty {
+            visibility: hidden;
+        }
+
+        .footer-banner {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-muted); 
+            margin-top: 15px;
+            min-height: 1.5em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <div class="lang-control-panel">
+            <button class="toggle-lang-btn" id="btn-lang-en" onclick="setLanguage('en')">Eng</button>
+            <button class="toggle-lang-btn active" id="btn-lang-zh" onclick="setLanguage('zh')">中</button>
+        </div>
+
+        <div class="card countdown-card" id="main-countdown-card">
+            <h1 id="deck-title">Days Remaining</h1>
+            
+            <div class="countdown-wrapper">
+                <div class="number" id="days-left">-</div>
+                <div class="label" id="days-label">工作天</div>
+            </div>
+
+            <div class="nav-container">
+                <button class="nav-btn" id="prev-btn" onclick="changeHoliday(-1)">&larr; Back</button>
+                <div class="holiday-details">
+                    <div class="holiday-name" id="holiday-name">Loading...</div>
+                    <div class="holiday-date" id="holiday-date"></div>
+                </div>
+                <button class="nav-btn" id="next-btn" onclick="changeHoliday(1)">Next &rarr;</button>
+            </div>
+            
+            <div class="footer-banner" id="dynamic-footer-banner"></div>
+        </div>
+
+        <div class="card optimizer-card">
+            <h2 id="opt-title">Smart Leave Maximizer</h2>
+            <div class="optimizer-form">
+                <div class="optimizer-input-group">
+                    <label for="yearly-al-input" id="opt-input-label">Annual Leave Quota (Per Year):</label>
+                    <input type="number" id="yearly-al-input" class="optimizer-input" min="0" max="30" value="14">
+                </div>
+                <button class="optimizer-btn" id="opt-submit-btn" onclick="runLeaveOptimization()">Optimize Leave</button>
+                <button class="clear-btn" id="opt-clear-btn" onclick="clearAllSelections()">Clear All</button>
+                <button class="export-btn" id="opt-export-btn" onclick="exportToICS()">📅 Export (.ics)</button>
+            </div>
+            <div class="optimizer-summary" id="opt-summary-text"></div>
+        </div>
+
+        <div class="card calendar-card">
+            <h2 id="calendar-title">Holiday Overview</h2>
+            <div class="calendar-grid" id="calendar-overview"></div>
+        </div>
+    </div>
+
+    <script>
+        const localizedContent = {
+            en: {
+                daysLabel: "Weekdays",
+                backBtn: "← Back",
+                nextBtn: "Next →",
+                calendarTitle: "Holiday Overview (Until End of Next Year)",
+                nearestLabel: "Nearest Public Holiday",
+                upcomingLabel: "Upcoming Holiday",
+                noHolidays: "No upcoming holidays found.",
+                checkDevice: "Check your device's calendar date.",
+                weekdaysHeader: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+                localeStr: 'en-US',
+                optTitle: "Smart Leave Maximizer",
+                optInputLabel: "Annual Leave Quota (Per Year):",
+                optBtn: "Optimize Leave",
+                optClearBtn: "Clear All",
+                optExportBtn: "📅 Export (.ics)",
+                optSummary: "Optimization Complete! Total leave scheduled (Your Preferences + Recommendations): {count2026} days in 2026, {count2027} days in 2027. You can freely click any calendar date to customize, add, or subtract specific leave days manually.",
+                overLimitWarning: "⚠️ Warning: Your manually preferred leave days exceed your allowed yearly quota allocation limits!",
+                noLeaveToExport: "No leave days selected to export! Please pick days on the calendar or click 'Optimize Leave' first.",
+                icsEventSummary: "Annual Leave (HK Holiday Planner)"
+            },
+            zh: {
+                daysLabel: "工作天",
+                backBtn: "← 返回",
+                nextBtn: "下一個 →",
+                calendarTitle: "公眾假期概覽（至下年年底）",
+                nearestLabel: "最近的公眾假期",
+                upcomingLabel: "即將到來的假期",
+                noHolidays: "未找到即將到來的假期。",
+                checkDevice: "請檢查您的裝置日期設定。",
+                weekdaysHeader: ['日', '一', '二', '三', '四', '五', '六'],
+                localeStr: 'zh-HK',
+                optTitle: "智能請假攻略優化器",
+                optInputLabel: "每年的年假限額 (天):",
+                optBtn: "生成最佳請假組合",
+                optClearBtn: "清除所有選擇",
+                optExportBtn: "📅 匯出至行事曆 (.ics)",
+                optSummary: "優化完成！目前已安排總年假（自選偏好 + 系統建議）：2026 年共 {count2026} 天，2027 年共 {count2027} 天。您可以自由點擊月曆上的任何日期，手動精確新增或刪除個別請假天數。",
+                overLimitWarning: "⚠️ 提醒：您手動選擇的年假天數已超出您輸入的每年假期額度限制！",
+                noLeaveToExport: "尚未選擇任何請假日期！請先在月曆上點選或點擊「生成最佳請假組合」。",
+                icsEventSummary: "特許年假 (香港公眾假期計時器)"
+            }
+        };
+
+        const hkHolidays = [
+            { date: '2026-01-01', en: 'New Year\'s Day', zh: '元旦', zinger: "" },
+            { date: '2026-02-17', en: 'Lunar New Year\'s Day', zh: '農曆年初一', zinger: "" },
+            { date: '2026-02-18', en: 'Second day of Lunar New Year', zh: '農曆年初二', zinger: "" },
+            { date: '2026-02-19', en: 'Third day of Lunar New Year', zh: '農曆年初三', zinger: "" },
+            { date: '2026-04-03', en: 'Good Friday', zh: '耶穌受難節', zinger: "日日都受緊難" },
+            { date: '2026-04-04', en: 'Ching Ming Festival', zh: '清明節', zinger: "" },
+            { date: '2026-04-06', en: 'Easter Monday', zh: '復活節星期一', zinger: "" },
+            { date: '2026-05-01', en: 'Labour Day', zh: '勞動節', zinger: "" },
+            { date: '2026-05-24', en: 'Birthday of the Buddha', zh: '佛誕', zinger: "" },
+            { date: '2026-06-19', en: 'Tuen Ng Festival', zh: '端午節', zinger: "" },
+            { date: '2026-07-01', en: 'HKSAR Establishment Day', zh: '香港特別行政區成立紀念日', zinger: "" },
+            { date: '2026-09-26', en: 'Day following Chinese Mid-Autumn Festival', zh: '中秋節翌日', zinger: "每年最難頂嘅時間又到" },
+            { date: '2026-10-01', en: 'National Day', zh: '國慶日', zinger: "" },
+            { date: '2026-10-19', en: 'Day following Chung Yeung Festival', zh: '重陽節翌日', zinger: "" },
+            { date: '2026-12-25', en: 'Christmas Day', zh: '聖誕節', zinger: "" },
+            { date: '2026-12-26', en: 'First weekday after Christmas Day', zh: '聖誕節後第一個周日', zinger: "" },
+            { date: '2027-01-01', en: 'New Year\'s Day', zh: '元旦', zinger: "" },
+            { date: '2027-02-06', en: 'Lunar New Year\'s Day', zh: '農曆年初一', zinger: "" },
+            { date: '2027-02-08', en: 'Third day of Lunar New Year', zh: '農曆年初三', zinger: "" },
+            { date: '2027-02-09', en: 'Fourth day of Lunar New Year', zh: '農曆年初四', zinger: "" },
+            { date: '2027-03-26', en: 'Good Friday', zh: '耶穌受難節', zinger: "日日都受緊難" },
+            { date: '2027-03-27', en: 'The day following Good Friday', zh: '耶穌受難節翌日', zinger: "" },
+            { date: '2027-03-29', en: 'Easter Monday', zh: '復活節星期一', zinger: "" },
+            { date: '2027-04-05', en: 'Ching Ming Festival', zh: '清明節', zinger: "" },
+            { date: '2027-05-01', en: 'Labour Day', zh: '勞動節', zinger: "" },
+            { date: '2027-05-13', en: 'Birthday of the Buddha', zh: '佛誕', zinger: "" },
+            { date: '2027-06-09', en: 'Tuen Ng Festival', zh: '端午節', zinger: "" },
+            { date: '2027-07-01', en: 'HKSAR Establishment Day', zh: '香港特別行政區成立紀念日', zinger: "" },
+            { date: '2027-09-16', en: 'Day following Chinese Mid-Autumn Festival', zh: '中秋節翌日', zinger: "每年最難頂嘅時間又到" },
+            { date: '2027-10-01', en: 'National Day', zh: '國慶日', zinger: "" },
+            { date: '2027-10-08', en: 'Chung Yeung Festival', zh: '重陽節', zinger: "" },
+            { date: '2027-12-25', en: 'Christmas Day', zh: '聖誕節', zinger: "" },
+            { date: '2027-12-27', en: 'The first weekday after Christmas Day', zh: '聖誕節後第一個周日', zinger: "" }
+        ];
+
+        let upcomingHolidays = [];
+        let currentIndex = 0;
+        let currentLang = 'zh'; 
+        
+        // Unified State Containers
+        let suggestedALDates = new Set();
+        let userSelectedALDates = new Set();
+
+        function parseDate(dateStr) {
+            const parts = dateStr.split('-');
+            return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0, 0);
+        }
+
+        function formatDateKey(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function calculateWeekdays(startDate, endDate) {
+            let count = 0;
+            let current = new Date(startDate.getTime());
+            current.setHours(0,0,0,0);
+            
+            let target = new Date(endDate.getTime());
+            target.setHours(0,0,0,0);
+
+            if (current > target) return 0;
+
+            while (current < target) {
+                current.setDate(current.getDate() + 1);
+                const dayOfWeek = current.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        function setLanguage(lang) {
+            if(currentLang === lang) return;
+            currentLang = lang;
+            
+            document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+            document.getElementById('btn-lang-zh').classList.toggle('active', lang === 'zh');
+            
+            renderCalendarOverview();
+            updateSummaryMessage();
+            updateDisplay();
+        }
+
+        function changeHoliday(step) {
+            currentIndex += step;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= upcomingHolidays.length) currentIndex = upcomingHolidays.length - 1;
+            updateDisplay();
+        }
+
+        function selectHolidayByDate(dateStr) {
+            const index = upcomingHolidays.findIndex(h => h.date === dateStr);
+            if (index !== -1) {
+                currentIndex = index;
+                updateDisplay();
+                document.getElementById('main-countdown-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function toggleALDate(dateStr) {
+            if (userSelectedALDates.has(dateStr)) {
+                userSelectedALDates.delete(dateStr);
+            } else if (suggestedALDates.has(dateStr)) {
+                suggestedALDates.delete(dateStr);
+            } else {
+                userSelectedALDates.add(dateStr);
+            }
+            
+            renderCalendarOverview();
+            updateSummaryMessage();
+            updateDisplay();
+        }
+
+        function clearAllSelections() {
+            userSelectedALDates.clear();
+            suggestedALDates.clear();
+            const summaryElement = document.getElementById('opt-summary-text');
+            summaryElement.innerText = "";
+            summaryElement.style.display = "none";
+            renderCalendarOverview();
+            updateDisplay();
+        }
+
+        function updateSummaryMessage() {
+            const summaryElement = document.getElementById('opt-summary-text');
+            if (summaryElement.style.display !== "block") return; 
+
+            const annualLimit = parseInt(document.getElementById('yearly-al-input').value, 10) || 0;
+            
+            let count2026 = 0;
+            let count2027 = 0;
+            let user2026 = 0;
+            let user2027 = 0;
+
+            userSelectedALDates.forEach(d => {
+                if (d.startsWith('2026')) { count2026++; user2026++; }
+                if (d.startsWith('2027')) { count2027++; user2027++; }
+            });
+            suggestedALDates.forEach(d => {
+                if (d.startsWith('2026')) count2026++;
+                if (d.startsWith('2027')) count2027++;
+            });
+
+            const langPack = localizedContent[currentLang];
+            let summaryMessage = langPack.optSummary
+                .replace("{count2026}", count2026)
+                .replace("{count2027}", count2027);
+
+            if (user2026 > annualLimit || user2027 > annualLimit) {
+                summaryMessage += "\n\n" + langPack.overLimitWarning;
+            }
+            summaryElement.innerText = summaryMessage;
+        }
+
+        function runLeaveOptimization() {
+            const annualLimit = parseInt(document.getElementById('yearly-al-input').value, 10);
+            if (isNaN(annualLimit) || annualLimit < 0) return;
+
+            suggestedALDates.clear();
+
+            const phMap = {};
+            hkHolidays.forEach(h => phMap[h.date] = true);
+
+            let userCount2026 = 0;
+            let userCount2027 = 0;
+            userSelectedALDates.forEach(d => {
+                if (d.startsWith('2026')) userCount2026++;
+                if (d.startsWith('2027')) userCount2027++;
+            });
+
+            let budget2026 = Math.max(0, annualLimit - userCount2026);
+            let budget2027 = Math.max(0, annualLimit - userCount2027);
+
+            const timeline = [];
+            let runner = new Date(2026, 0, 1);
+            const endTimelineDate = new Date(2027, 11, 31);
+
+            while (runner <= endTimelineDate) {
+                const key = formatDateKey(runner);
+                const dayOfWeek = runner.getDay();
+                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                const isPH = !!phMap[key];
+                const isUserSelected = userSelectedALDates.has(key);
+
+                timeline.push({
+                    dateKey: key,
+                    year: runner.getFullYear(),
+                    isPH: isPH,
+                    isRestBoundary: isWeekend || isPH || isUserSelected,
+                    isAvailableForSuggestion: !isWeekend && !isPH && !isUserSelected
+                });
+                runner.setDate(runner.getDate() + 1);
+            }
+
+            const candidates = [];
+            let idx = 0;
+            while (idx < timeline.length) {
+                if (timeline[idx].isAvailableForSuggestion) {
+                    let startIdx = idx;
+                    while (idx < timeline.length && timeline[idx].isAvailableForSuggestion) {
+                        idx++;
+                    }
+                    let endIdx = idx - 1;
+                    let gapLength = (endIdx - startIdx) + 1;
+
+                    let leftRestDays = 0;
+                    let l = startIdx - 1;
+                    while (l >= 0 && timeline[l].isRestBoundary) {
+                        leftRestDays++;
+                        l--;
+                    }
+
+                    let rightRestDays = 0;
+                    let r = endIdx + 1;
+                    while (r < timeline.length && timeline[r].isRestBoundary) {
+                        rightRestDays++;
+                        r++;
+                    }
+
+                    let totalBlockLength = leftRestDays + gapLength + rightRestDays;
+                    let efficiency = totalBlockLength / gapLength;
+
+                    candidates.push({
+                        startIdx: startIdx,
+                        endIdx: endIdx,
+                        gapLength: gapLength,
+                        totalBlockLength: totalBlockLength,
+                        efficiency: efficiency
+                    });
+                } else {
+                    idx++;
+                }
+            }
+
+            candidates.sort((a, b) => {
+                if (b.efficiency !== a.efficiency) return b.efficiency - a.efficiency;
+                return b.totalBlockLength - a.totalBlockLength;
+            });
+
+            candidates.forEach(cand => {
+                let need2026 = 0;
+                let need2027 = 0;
+                for (let i = cand.startIdx; i <= cand.endIdx; i++) {
+                    if (timeline[i].year === 2026) need2026++;
+                    if (timeline[i].year === 2027) need2027++;
+                }
+
+                if (budget2026 >= need2026 && budget2027 >= need2027) {
+                    for (let i = cand.startIdx; i <= cand.endIdx; i++) {
+                        suggestedALDates.add(timeline[i].dateKey);
+                    }
+                    budget2026 -= need2026;
+                    budget2027 -= need2027;
+                }
+            });
+
+            document.getElementById('opt-summary-text').style.display = "block";
+            renderCalendarOverview();
+            updateSummaryMessage();
+            updateDisplay();
+        }
+
+        function exportToICS() {
+            const langPack = localizedContent[currentLang];
+            const combinedLeaveDates = new Set([...userSelectedALDates, ...suggestedALDates]);
+            
+            if (combinedLeaveDates.size === 0) {
+                alert(langPack.noLeaveToExport);
+                return;
+            }
+
+            let icsContent = [
+                "BEGIN:VCALENDAR",
+                "VERSION:2.0",
+                "PRODID:-//Chi Kit Matthew Choy//HK Holiday Planner//EN",
+                "CALSCALE:GREGORIAN",
+                "METHOD:PUBLISH"
+            ];
+
+            let fallbackYear = new Date().getFullYear();
+
+            combinedLeaveDates.forEach(dateStr => {
+                const baseDate = parseDate(dateStr);
+                fallbackYear = baseDate.getFullYear();
+                
+                const startY = baseDate.getFullYear();
+                const startM = String(baseDate.getMonth() + 1).padStart(2, '0');
+                const startD = String(baseDate.getDate()).padStart(2, '0');
+                const dtStart = `${startY}${startM}${startD}`;
+                
+                const nextDate = new Date(baseDate.getTime());
+                nextDate.setDate(nextDate.getDate() + 1);
+                const endY = nextDate.getFullYear();
+                const endM = String(nextDate.getMonth() + 1).padStart(2, '0');
+                const endD = String(nextDate.getDate()).padStart(2, '0');
+                const dtEnd = `${endY}${endM}${endD}`;
+                
+                const timestamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                const uniqueId = `leave-${dateStr}-${Math.random().toString(36).substr(2, 9)}@hkholidayplanner.com`;
+
+                icsContent.push(
+                    "BEGIN:VEVENT",
+                    `UID:${uniqueId}`,
+                    `DTSTAMP:${timestamp}`,
+                    `DTSTART;VALUE=DATE:${dtStart}`,
+                    `DTEND;VALUE=DATE:${dtEnd}`,
+                    `SUMMARY:${langPack.icsEventSummary}`,
+                    "STATUS:CONFIRMED",
+                    "TRANSP:TRANSPARENT",
+                    "END:VEVENT"
+                );
+            });
+
+            icsContent.push("END:VCALENDAR");
+            const icsString = icsContent.join("\r\n");
+            
+            const blob = new Blob([icsString], { type: "text/calendar;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `HK_Leave_Planner_${fallbackYear}.ics`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function updateDisplay() {
+            const langPack = localizedContent[currentLang];
+            
+            document.getElementById('days-label').innerText = langPack.daysLabel;
+            document.getElementById('prev-btn').innerText = langPack.backBtn;
+            document.getElementById('next-btn').innerText = langPack.nextBtn;
+            document.getElementById('calendar-title').innerText = langPack.calendarTitle;
+            
+            document.getElementById('opt-title').innerText = langPack.optTitle;
+            document.getElementById('opt-input-label').innerText = langPack.optInputLabel;
+            document.getElementById('opt-submit-btn').innerText = langPack.optBtn;
+            document.getElementById('opt-clear-btn').innerText = langPack.optClearBtn;
+            document.getElementById('opt-export-btn').innerText = langPack.optExportBtn;
+
+            if (upcomingHolidays.length === 0) {
+                document.getElementById('days-left').innerText = "0";
+                document.getElementById('holiday-name').innerText = langPack.noHolidays;
+                document.getElementById('holiday-date').innerText = langPack.checkDevice;
+                document.getElementById('dynamic-footer-banner').innerText = "";
+                document.getElementById('prev-btn').disabled = true;
+                document.getElementById('next-btn').disabled = true;
+                return;
+            }
+
+            const currentHoliday = upcomingHolidays[currentIndex];
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const targetDateObj = parseDate(currentHoliday.date);
+            const weekdaysRemaining = calculateWeekdays(today, targetDateObj);
+            
+            document.getElementById('days-left').innerText = weekdaysRemaining;
+            document.getElementById('holiday-name').innerText = currentHoliday[currentLang];
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('holiday-date').innerText = targetDateObj.toLocaleDateString(langPack.localeStr, options);
+
+            document.getElementById('prev-btn').disabled = (currentIndex === 0);
+            document.getElementById('next-btn').disabled = (currentIndex === upcomingHolidays.length - 1);
+            
+            const firstFutureIndex = upcomingHolidays.findIndex(item => parseDate(item.date) >= today);
+            const isNearest = (currentIndex === firstFutureIndex || (firstFutureIndex === -1 && currentIndex === 0));
+
+            const headerPrefix = isNearest ? langPack.nearestLabel : langPack.upcomingLabel;
+            document.getElementById('deck-title').innerText = isNearest 
+                ? headerPrefix 
+                : `${headerPrefix} (${currentIndex + 1}/${upcomingHolidays.length})`;
+
+            const mainCard = document.getElementById('main-countdown-card');
+            
+            const bannerElement = document.getElementById('dynamic-footer-banner');
+            if (currentLang === 'zh') {
+                bannerElement.innerText = currentHoliday.zinger; 
+            } else {
+                bannerElement.innerText = "";
+            }
+
+            document.querySelectorAll('.day-cell.selected-holiday').forEach(cell => {
+                cell.classList.remove('selected-holiday');
+            });
+
+            if (isNearest) {
+                mainCard.classList.remove('browsing'); 
+            } else {
+                mainCard.classList.add('browsing'); 
+            }
+
+            const activeCalendarCell = document.querySelector(`.day-cell[data-date="${currentHoliday.date}"]`);
+            if (activeCalendarCell) {
+                activeCalendarCell.classList.add('selected-holiday');
+            }
+        }
+
+        function renderCalendarOverview() {
+            const overviewContainer = document.getElementById('calendar-overview');
+            overviewContainer.innerHTML = ""; 
+            
+            const langPack = localizedContent[currentLang];
+            const today = new Date();
+            const startYear = today.getFullYear();
+            const startMonth = today.getMonth();
+            
+            const endYear = startYear + 1;
+            const endMonth = 11; 
+            const totalMonthsToRender = ((endYear - startYear) * 12) + (endMonth - startMonth) + 1;
+
+            const holidayMap = {};
+            hkHolidays.forEach(h => holidayMap[h.date] = h[currentLang]);
+
+            for (let i = 0; i < totalMonthsToRender; i++) {
+                let currentMonthIndex = startMonth + i;
+                let targetYear = startYear;
+
+                if (currentMonthIndex > 11) {
+                    targetYear += Math.floor(currentMonthIndex / 12);
+                    currentMonthIndex = currentMonthIndex % 12;
+                }
+
+                const monthBox = document.createElement('div');
+                monthBox.className = 'month-box';
+
+                const monthLabel = new Date(targetYear, currentMonthIndex).toLocaleString(langPack.localeStr, { month: 'long', year: 'numeric' });
+                const title = document.createElement('div');
+                title.className = 'month-title';
+                title.innerText = monthLabel;
+                monthBox.appendChild(title);
+
+                const daysGrid = document.createElement('div');
+                daysGrid.className = 'days-grid';
+
+                langPack.weekdaysHeader.forEach(dayName => {
+                    const headerCell = document.createElement('div');
+                    headerCell.className = 'day-name';
+                    headerCell.innerText = dayName;
+                    daysGrid.appendChild(headerCell);
+                });
+
+                const firstDayDayOfWeek = new Date(targetYear, currentMonthIndex, 1).getDay();
+                const totalDaysInMonth = new Date(targetYear, currentMonthIndex + 1, 0).getDate();
+
+                for (let space = 0; space < firstDayDayOfWeek; space++) {
+                    const blankCell = document.createElement('div');
+                    blankCell.className = 'day-cell empty';
+                    daysGrid.appendChild(blankCell);
+                }
+
+                for (let date = 1; date <= totalDaysInMonth; date++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'day-cell';
+                    dayCell.innerText = date;
+
+                    const dateStringKey = `${targetYear}-${String(currentMonthIndex + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                    const targetDayOfWeek = new Date(targetYear, currentMonthIndex, date).getDay();
+
+                    dayCell.setAttribute('data-date', dateStringKey);
+
+                    if (targetDayOfWeek === 0 || targetDayOfWeek === 6) {
+                        dayCell.classList.add('weekend');
+                    } else if (holidayMap[dateStringKey]) {
+                        dayCell.classList.add('holiday');
+                        dayCell.title = holidayMap[dateStringKey];
+                        dayCell.onclick = function() {
+                            selectHolidayByDate(dateStringKey);
+                        };
+                    } else {
+                        dayCell.classList.add('standard-workday');
+                        dayCell.onclick = function() {
+                            toggleALDate(dateStringKey);
+                        };
+                    }
+
+                    if (userSelectedALDates.has(dateStringKey)) {
+                        dayCell.classList.add('user-selected-al');
+                    } else if (suggestedALDates.has(dateStringKey)) {
+                        dayCell.classList.add('suggested-al');
+                    }
+
+                    if (targetYear === today.getFullYear() && currentMonthIndex === today.getMonth() && date === today.getDate()) {
+                        dayCell.classList.add('today');
+                    }
+
+                    daysGrid.appendChild(dayCell);
+                }
+
+                monthBox.appendChild(daysGrid);
+                overviewContainer.appendChild(monthBox);
+            }
+        }
+
+        const todayInstance = new Date();
+        todayInstance.setHours(0,0,0,0);
+
+        const startOfThisMonth = new Date(todayInstance.getFullYear(), todayInstance.getMonth(), 1);
+        upcomingHolidays = hkHolidays.filter(item => {
+            const hDate = parseDate(item.date);
+            return hDate >= startOfThisMonth;
+        });
+
+        const initialIndex = upcomingHolidays.findIndex(item => parseDate(item.date) >= todayInstance);
+        currentIndex = initialIndex !== -1 ? initialIndex : 0;
+
+        renderCalendarOverview();
+        updateDisplay();
+    </script>
+</body>
+</html>
