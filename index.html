@@ -2,7 +2,7 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>香港公眾假期計時器 / HK Public Holiday Planner</title>
 
     <meta name="description" content="最準確的香港公眾假期計時器與請假攻略。自動計算剩餘工作天，助你輕鬆規劃長假期！HK Public Holiday countdown timer and holiday planner.">
@@ -35,6 +35,11 @@
             --text-muted: #7f8c8d;
             --weekend-bg: #f8f9fa;
             --weekend-text: #bdc3c7;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -45,9 +50,10 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             box-sizing: border-box;
+            padding-bottom: calc(20px + var(--safe-bottom));
         }
 
         .dashboard {
@@ -75,11 +81,17 @@
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.2s ease;
+            touch-action: manipulation;
+            user-select: none;
         }
 
         .toggle-lang-btn.active {
             background-color: var(--text-main);
             color: #ffffff;
+        }
+
+        .toggle-lang-btn:active {
+            transform: scale(0.92);
         }
 
         .card {
@@ -88,6 +100,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             padding: 30px;
             box-sizing: border-box;
+            transition: padding 0.3s ease;
         }
 
         .countdown-card {
@@ -101,6 +114,7 @@
             letter-spacing: 1.5px;
             color: var(--text-muted);
             margin: 0 0 15px 0;
+            transition: font-size 0.3s ease;
         }
 
         .countdown-wrapper {
@@ -112,7 +126,7 @@
             font-weight: 800;
             color: var(--primary-color);
             line-height: 1;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, font-size 0.3s ease;
         }
 
         .countdown-card.browsing .number {
@@ -138,6 +152,7 @@
             border: 1px solid #eaeaea;
             border-radius: 50px;
             padding: 8px 16px;
+            transition: all 0.3s ease;
         }
 
         .nav-btn {
@@ -149,18 +164,26 @@
             font-weight: 600;
             border-radius: 25px;
             cursor: pointer;
-            transition: background 0.2s ease, opacity 0.2s ease;
+            transition: background 0.2s ease, opacity 0.2s ease, transform 0.15s ease;
             user-select: none;
+            touch-action: manipulation;
+            min-height: 44px;
+            min-width: 44px;
         }
 
         .nav-btn:hover:not(:disabled) {
             background-color: var(--primary-hover);
         }
 
+        .nav-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
         .nav-btn:disabled {
             background-color: #e0e0e0;
             color: #a0a0a0;
             cursor: not-allowed;
+            transform: none;
         }
 
         .holiday-details {
@@ -171,6 +194,7 @@
             font-size: 1.35rem;
             font-weight: 700;
             color: var(--text-main);
+            transition: font-size 0.3s ease;
         }
 
         .holiday-date {
@@ -186,6 +210,7 @@
             color: var(--text-main);
             border-left: 4px solid var(--suggested-al-color);
             padding-left: 10px;
+            transition: font-size 0.3s ease;
         }
 
         .optimizer-form {
@@ -199,6 +224,8 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
+            flex: 1;
+            min-width: 140px;
         }
 
         .optimizer-input-group label {
@@ -215,6 +242,8 @@
             width: 140px;
             outline: none;
             transition: border-color 0.2s ease;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .optimizer-input:focus {
@@ -230,12 +259,19 @@
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, transform 0.15s ease;
             margin-top: 22px;
+            touch-action: manipulation;
+            user-select: none;
+            min-height: 48px;
         }
 
         .optimizer-btn:hover {
             background-color: var(--suggested-al-hover);
+        }
+
+        .optimizer-btn:active {
+            transform: scale(0.97);
         }
 
         .clear-btn {
@@ -247,12 +283,19 @@
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, transform 0.15s ease;
             margin-top: 22px;
+            touch-action: manipulation;
+            user-select: none;
+            min-height: 48px;
         }
 
         .clear-btn:hover {
             background-color: #455a64;
+        }
+
+        .clear-btn:active {
+            transform: scale(0.97);
         }
 
         .export-btn {
@@ -264,15 +307,39 @@
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, transform 0.15s ease;
             margin-top: 22px;
             display: flex;
             align-items: center;
             gap: 8px;
+            touch-action: manipulation;
+            user-select: none;
+            min-height: 48px;
         }
 
         .export-btn:hover {
             background-color: var(--export-btn-hover);
+        }
+
+        .export-btn:active {
+            transform: scale(0.97);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .button-group .optimizer-btn,
+        .button-group .clear-btn,
+        .button-group .export-btn {
+            flex: 1;
+            min-width: 100px;
+            margin-top: 22px;
+            justify-content: center;
         }
 
         .optimizer-summary {
@@ -286,6 +353,7 @@
             border-left: 4px solid var(--suggested-al-color);
             white-space: pre-line;
             display: none;
+            word-break: break-word;
         }
 
         .calendar-card h2 {
@@ -294,7 +362,7 @@
             color: var(--text-main);
             border-left: 4px solid var(--primary-color);
             padding-left: 10px;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, font-size 0.3s ease;
         }
 
         .calendar-grid {
@@ -308,6 +376,7 @@
             border-radius: 8px;
             padding: 12px;
             background: #fafbfc;
+            transition: padding 0.3s ease;
         }
 
         .month-title {
@@ -330,6 +399,7 @@
             font-weight: 700;
             color: var(--text-muted);
             padding-bottom: 5px;
+            font-size: 0.75rem;
         }
 
         .day-cell {
@@ -339,11 +409,27 @@
             font-weight: 500;
             position: relative;
             transition: all 0.2s ease;
+            cursor: pointer;
+            touch-action: manipulation;
+            user-select: none;
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-cell:active {
+            transform: scale(0.9);
         }
 
         .day-cell.weekend {
             background-color: var(--weekend-bg);
             color: var(--weekend-text);
+            cursor: default;
+        }
+
+        .day-cell.weekend:active {
+            transform: none;
         }
 
         .day-cell.holiday {
@@ -355,8 +441,10 @@
 
         .day-cell.holiday:hover {
             background-color: var(--primary-hover);
-            transform: scale(1.1);
-            z-index: 2;
+        }
+
+        .day-cell.holiday:active {
+            transform: scale(0.92);
         }
 
         /* Suggested AL Color Styles */
@@ -372,6 +460,10 @@
             background-color: var(--suggested-al-hover) !important;
         }
 
+        .day-cell.suggested-al:active {
+            transform: scale(0.9);
+        }
+
         /* User Preferred AL Color Styles */
         .day-cell.user-selected-al {
             background-color: var(--user-al-color) !important;
@@ -385,12 +477,16 @@
             background-color: var(--user-al-hover) !important;
         }
 
+        .day-cell.user-selected-al:active {
+            transform: scale(0.9);
+        }
+
         .day-cell.standard-workday {
             cursor: pointer;
         }
 
-        .day-cell.standard-workday:hover {
-            box-shadow: inset 0 0 0 2px var(--user-al-color);
+        .day-cell.standard-workday:active {
+            transform: scale(0.9);
         }
 
         .day-cell.holiday.selected-holiday {
@@ -407,6 +503,11 @@
 
         .day-cell.empty {
             visibility: hidden;
+            cursor: default;
+        }
+
+        .day-cell.empty:active {
+            transform: none;
         }
 
         .footer-banner {
@@ -417,9 +518,502 @@
             margin-top: 15px;
             min-height: 1.5em;
         }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== MOBILE OPTIMIZATIONS ===== */
+
+        /* Touch-friendly tap targets */
+        .nav-btn, .optimizer-btn, .clear-btn, .export-btn, .toggle-lang-btn, .day-cell {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+        }
+
+        /* Tablets & smaller laptops */
+        @media (max-width: 768px) {
+            .card {
+                padding: 20px;
+            }
+            .number {
+                font-size: 4.5rem;
+            }
+            .calendar-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 14px;
+            }
+        }
+
+        /* Mobile phones */
+        @media (max-width: 600px) {
+            body {
+                padding: 8px;
+                padding-bottom: calc(8px + var(--safe-bottom));
+            }
+            
+            .dashboard {
+                gap: 12px;
+                padding: 0;
+            }
+            
+            .card {
+                padding: 14px !important;
+                border-radius: 12px;
+            }
+            
+            /* Countdown section */
+            .countdown-wrapper {
+                margin: 8px 0;
+            }
+            
+            .number {
+                font-size: 3.2rem !important;
+            }
+            
+            .label {
+                font-size: 0.85rem;
+            }
+            
+            h1 {
+                font-size: 1rem;
+                margin-bottom: 8px;
+                letter-spacing: 1px;
+            }
+            
+            /* Navigation */
+            .nav-container {
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 10px 12px;
+                gap: 8px;
+                border-radius: 14px;
+                margin-top: 16px;
+            }
+            
+            .holiday-details {
+                order: -1;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .holiday-name {
+                font-size: 1.1rem;
+            }
+            
+            .holiday-date {
+                font-size: 0.85rem;
+            }
+            
+            .nav-btn {
+                padding: 10px 16px !important;
+                font-size: 0.8rem !important;
+                min-height: 44px;
+                flex: 1 1 auto;
+                min-width: 70px;
+                border-radius: 20px;
+            }
+            
+            .nav-btn:active:not(:disabled) {
+                transform: scale(0.95);
+            }
+            
+            /* Optimizer */
+            .optimizer-card h2 {
+                font-size: 1.15rem;
+                margin-bottom: 14px;
+                padding-left: 8px;
+            }
+            
+            .optimizer-form {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 10px;
+            }
+            
+            .optimizer-input-group {
+                width: 100%;
+                min-width: unset;
+            }
+            
+            .optimizer-input-group label {
+                font-size: 0.85rem;
+            }
+            
+            .optimizer-input {
+                width: 100% !important;
+                padding: 12px 14px;
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+                min-width: unset;
+                gap: 8px;
+            }
+            
+            .button-group .optimizer-btn,
+            .button-group .clear-btn,
+            .button-group .export-btn {
+                width: 100%;
+                justify-content: center;
+                margin-top: 0;
+                padding: 14px 20px;
+                font-size: 0.9rem;
+                min-height: 48px;
+                border-radius: 8px;
+            }
+            
+            .optimizer-btn:active, .clear-btn:active, .export-btn:active {
+                transform: scale(0.97);
+            }
+            
+            .optimizer-summary {
+                font-size: 0.85rem;
+                padding: 10px 14px;
+                white-space: normal;
+                border-left-width: 3px;
+            }
+            
+            /* Calendar */
+            .calendar-card h2 {
+                font-size: 1.15rem;
+                margin-bottom: 14px;
+                padding-left: 8px;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+            
+            .month-box {
+                padding: 6px !important;
+                border-radius: 6px;
+            }
+            
+            .month-title {
+                font-size: 0.75rem !important;
+                margin-bottom: 6px;
+            }
+            
+            .days-grid {
+                font-size: 0.65rem !important;
+                gap: 1px !important;
+            }
+            
+            .day-name {
+                font-size: 0.6rem !important;
+                padding-bottom: 3px;
+            }
+            
+            .day-cell {
+                padding: 4px 0 !important;
+                border-radius: 4px;
+                min-height: 24px;
+                font-size: 0.65rem;
+            }
+            
+            .day-cell:active {
+                transform: scale(0.9);
+            }
+            
+            .day-cell.holiday.selected-holiday {
+                transform: scale(1.05);
+            }
+            
+            /* Language toggle */
+            .lang-control-panel {
+                gap: 4px;
+                margin-bottom: -4px;
+            }
+            
+            .toggle-lang-btn {
+                padding: 8px 14px !important;
+                font-size: 0.8rem !important;
+                min-height: 36px;
+                min-width: 44px;
+                border-radius: 16px;
+            }
+            
+            .toggle-lang-btn:active {
+                transform: scale(0.92);
+            }
+            
+            /* Footer banner */
+            .footer-banner {
+                font-size: 1rem !important;
+                margin-top: 10px;
+            }
+        }
+
+        /* Very small phones */
+        @media (max-width: 400px) {
+            .number {
+                font-size: 2.8rem !important;
+            }
+            
+            .calendar-grid {
+                gap: 5px !important;
+            }
+            
+            .days-grid {
+                font-size: 0.55rem !important;
+                gap: 1px !important;
+            }
+            
+            .day-cell {
+                min-height: 20px;
+                padding: 3px 0 !important;
+                font-size: 0.55rem;
+            }
+            
+            .day-name {
+                font-size: 0.5rem !important;
+                padding-bottom: 2px;
+            }
+            
+            .card {
+                padding: 10px !important;
+                border-radius: 10px;
+            }
+            
+            .holiday-name {
+                font-size: 0.95rem;
+            }
+            
+            .holiday-date {
+                font-size: 0.8rem;
+            }
+            
+            .nav-btn {
+                padding: 8px 12px !important;
+                font-size: 0.7rem !important;
+                min-height: 38px;
+                min-width: 56px;
+            }
+            
+            .nav-container {
+                padding: 8px 10px;
+                gap: 6px;
+            }
+            
+            .toggle-lang-btn {
+                padding: 6px 10px !important;
+                font-size: 0.7rem !important;
+                min-height: 30px;
+                min-width: 36px;
+            }
+        }
+
+        /* Landscape phones - make the most of horizontal space */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 6px;
+            }
+            
+            .dashboard {
+                gap: 8px;
+            }
+            
+            .card {
+                padding: 10px !important;
+                border-radius: 10px;
+            }
+            
+            .number {
+                font-size: 2.5rem !important;
+            }
+            
+            .countdown-wrapper {
+                margin: 4px 0;
+            }
+            
+            .nav-container {
+                padding: 6px 10px;
+                margin-top: 8px;
+                border-radius: 12px;
+            }
+            
+            .nav-btn {
+                padding: 6px 12px !important;
+                font-size: 0.7rem !important;
+                min-height: 32px;
+                min-width: 50px;
+            }
+            
+            .holiday-name {
+                font-size: 0.95rem;
+            }
+            
+            .holiday-date {
+                font-size: 0.75rem;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 4px !important;
+            }
+            
+            .month-box {
+                padding: 4px !important;
+            }
+            
+            .month-title {
+                font-size: 0.65rem !important;
+                margin-bottom: 3px;
+            }
+            
+            .days-grid {
+                font-size: 0.5rem !important;
+                gap: 1px !important;
+            }
+            
+            .day-cell {
+                min-height: 16px;
+                padding: 2px 0 !important;
+                font-size: 0.5rem;
+                border-radius: 3px;
+            }
+            
+            .day-name {
+                font-size: 0.5rem !important;
+                padding-bottom: 2px;
+            }
+            
+            .optimizer-card h2 {
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+            
+            .optimizer-form {
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            
+            .optimizer-input-group {
+                flex: 1;
+                min-width: 80px;
+            }
+            
+            .optimizer-input {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .button-group {
+                flex-direction: row;
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            .button-group .optimizer-btn,
+            .button-group .clear-btn,
+            .button-group .export-btn {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                min-height: 32px;
+                margin-top: 0;
+            }
+            
+            h1 {
+                font-size: 0.85rem;
+                margin-bottom: 4px;
+            }
+            
+            .label {
+                font-size: 0.7rem;
+            }
+            
+            .optimizer-summary {
+                font-size: 0.75rem;
+                padding: 6px 10px;
+                margin-top: 8px;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a2e;
+                --card-bg: #16213e;
+                --text-main: #e8e8e8;
+                --text-muted: #a0aec0;
+                --weekend-bg: #1e2a3a;
+                --weekend-text: #4a5568;
+            }
+            
+            .nav-container {
+                background: #1a2744;
+                border-color: #2a3a5a;
+            }
+            
+            .month-box {
+                background: #1a2744;
+                border-color: #2a3a5a;
+            }
+            
+            .optimizer-summary {
+                background-color: #0d2b3e;
+                color: #63b3ed;
+            }
+            
+            .toggle-lang-btn {
+                background-color: #2a3a5a;
+                color: #e8e8e8;
+            }
+            
+            .toggle-lang-btn.active {
+                background-color: #e8e8e8;
+                color: #1a1a2e;
+            }
+            
+            .day-cell.weekend {
+                background-color: #1e2a3a;
+                color: #4a5568;
+            }
+            
+            .optimizer-input {
+                background-color: #1a2744;
+                color: #e8e8e8;
+                border-color: #2a3a5a;
+            }
+            
+            .optimizer-input:focus {
+                border-color: var(--suggested-al-color);
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
 
     <div class="dashboard">
         <div class="lang-control-panel">
@@ -452,11 +1046,13 @@
             <div class="optimizer-form">
                 <div class="optimizer-input-group">
                     <label for="yearly-al-input" id="opt-input-label">Annual Leave Quota (Per Year):</label>
-                    <input type="number" id="yearly-al-input" class="optimizer-input" min="0" max="30" value="14">
+                    <input type="number" id="yearly-al-input" class="optimizer-input" min="0" max="30" value="14" inputmode="numeric">
                 </div>
-                <button class="optimizer-btn" id="opt-submit-btn" onclick="runLeaveOptimization()">Optimize Leave</button>
-                <button class="clear-btn" id="opt-clear-btn" onclick="clearAllSelections()">Clear All</button>
-                <button class="export-btn" id="opt-export-btn" onclick="exportToICS()">📅 Export (.ics)</button>
+                <div class="button-group">
+                    <button class="optimizer-btn" id="opt-submit-btn" onclick="runLeaveOptimization()">Optimize Leave</button>
+                    <button class="clear-btn" id="opt-clear-btn" onclick="clearAllSelections()">Clear All</button>
+                    <button class="export-btn" id="opt-export-btn" onclick="exportToICS()">📅 Export (.ics)</button>
+                </div>
             </div>
             <div class="optimizer-summary" id="opt-summary-text"></div>
         </div>
@@ -488,7 +1084,9 @@
                 optSummary: "Optimization Complete! Total leave scheduled (Your Preferences + Recommendations): {count2026} days in 2026, {count2027} days in 2027. You can freely click any calendar date to customize, add, or subtract specific leave days manually.",
                 overLimitWarning: "⚠️ Warning: Your manually preferred leave days exceed your allowed yearly quota allocation limits!",
                 noLeaveToExport: "No leave days selected to export! Please pick days on the calendar or click 'Optimize Leave' first.",
-                icsEventSummary: "Annual Leave (HK Holiday Planner)"
+                icsEventSummary: "Annual Leave (HK Holiday Planner)",
+                toastCopied: "Copied to clipboard!",
+                toastExported: "Calendar file exported!"
             },
             zh: {
                 daysLabel: "工作天",
@@ -509,7 +1107,9 @@
                 optSummary: "優化完成！目前已安排總年假（自選偏好 + 系統建議）：2026 年共 {count2026} 天，2027 年共 {count2027} 天。您可以自由點擊月曆上的任何日期，手動精確新增或刪除個別請假天數。",
                 overLimitWarning: "⚠️ 提醒：您手動選擇的年假天數已超出您輸入的每年假期額度限制！",
                 noLeaveToExport: "尚未選擇任何請假日期！請先在月曆上點選或點擊「生成最佳請假組合」。",
-                icsEventSummary: "特許年假 (香港公眾假期計時器)"
+                icsEventSummary: "特許年假 (香港公眾假期計時器)",
+                toastCopied: "已複製到剪貼簿！",
+                toastExported: "行事曆檔案已匯出！"
             }
         };
 
@@ -556,6 +1156,17 @@
         // Unified State Containers
         let suggestedALDates = new Set();
         let userSelectedALDates = new Set();
+
+        // Toast function
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toast._hideTimeout);
+            toast._hideTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
 
         function parseDate(dateStr) {
             const parts = dateStr.split('-');
@@ -606,6 +1217,11 @@
             if (currentIndex < 0) currentIndex = 0;
             if (currentIndex >= upcomingHolidays.length) currentIndex = upcomingHolidays.length - 1;
             updateDisplay();
+            
+            // Scroll to top of countdown card on mobile
+            if (window.innerWidth <= 600) {
+                document.getElementById('main-countdown-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
         function selectHolidayByDate(dateStr) {
@@ -613,17 +1229,24 @@
             if (index !== -1) {
                 currentIndex = index;
                 updateDisplay();
-                document.getElementById('main-countdown-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                const card = document.getElementById('main-countdown-card');
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
         function toggleALDate(dateStr) {
             if (userSelectedALDates.has(dateStr)) {
                 userSelectedALDates.delete(dateStr);
+                const langPack = localizedContent[currentLang];
+                showToast(`🗑️ ${dateStr} removed`);
             } else if (suggestedALDates.has(dateStr)) {
                 suggestedALDates.delete(dateStr);
+                const langPack = localizedContent[currentLang];
+                showToast(`🗑️ ${dateStr} removed`);
             } else {
                 userSelectedALDates.add(dateStr);
+                const langPack = localizedContent[currentLang];
+                showToast(`✅ ${dateStr} added`);
             }
             
             renderCalendarOverview();
@@ -639,6 +1262,8 @@
             summaryElement.style.display = "none";
             renderCalendarOverview();
             updateDisplay();
+            const langPack = localizedContent[currentLang];
+            showToast("🧹 " + (currentLang === 'zh' ? '已清除所有選擇' : 'Cleared all selections'));
         }
 
         function updateSummaryMessage() {
@@ -778,6 +1403,9 @@
             renderCalendarOverview();
             updateSummaryMessage();
             updateDisplay();
+            
+            const langPack = localizedContent[currentLang];
+            showToast("✅ " + (currentLang === 'zh' ? '優化完成！' : 'Optimization complete!'));
         }
 
         function exportToICS() {
@@ -785,7 +1413,7 @@
             const combinedLeaveDates = new Set([...userSelectedALDates, ...suggestedALDates]);
             
             if (combinedLeaveDates.size === 0) {
-                alert(langPack.noLeaveToExport);
+                showToast("⚠️ " + langPack.noLeaveToExport);
                 return;
             }
 
@@ -841,6 +1469,8 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            
+            showToast("📅 " + langPack.toastExported);
         }
 
         function updateDisplay() {
